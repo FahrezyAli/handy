@@ -6,6 +6,8 @@ import '../bloc/timer_event.dart';
 import '../bloc/timer_state.dart';
 import 'set_timer_sheet.dart';
 import '../widgets/circular_progress.dart';
+import 'break_view.dart';
+
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -209,6 +211,20 @@ class HomeView extends StatelessWidget {
           },
         ),
       ),
+      // Billy bikin tombol supaya bisa akses page Break
+      floatingActionButton: FloatingActionButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const BreakView()),
+        );
+      },
+      backgroundColor: const Color(0xFFE8E0B8),
+      child: const Icon(
+        Icons.coffee,
+        color: Color(0xFF2D2D44),
+      ),
+    ),
     );
   }
 
