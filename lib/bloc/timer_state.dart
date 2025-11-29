@@ -10,6 +10,7 @@ class TimerState extends Equatable {
   final int workDuration;
   final int breakDuration;
   final String taskName;
+  final bool postureCheckShown;
 
   const TimerState({
     required this.duration,
@@ -19,6 +20,7 @@ class TimerState extends Equatable {
     required this.workDuration,
     required this.breakDuration,
     required this.taskName,
+    this.postureCheckShown = false,
   });
 
   factory TimerState.initial() {
@@ -30,6 +32,7 @@ class TimerState extends Equatable {
       workDuration: 7200,
       breakDuration: 900, // 15 minutes
       taskName: 'Making 3D Design',
+      postureCheckShown: false,
     );
   }
 
@@ -41,6 +44,7 @@ class TimerState extends Equatable {
     int? workDuration,
     int? breakDuration,
     String? taskName,
+    bool? postureCheckShown,
   }) {
     return TimerState(
       duration: duration ?? this.duration,
@@ -50,6 +54,7 @@ class TimerState extends Equatable {
       workDuration: workDuration ?? this.workDuration,
       breakDuration: breakDuration ?? this.breakDuration,
       taskName: taskName ?? this.taskName,
+      postureCheckShown: postureCheckShown ?? this.postureCheckShown,
     );
   }
 
@@ -62,5 +67,6 @@ class TimerState extends Equatable {
     workDuration,
     breakDuration,
     taskName,
+    postureCheckShown,
   ];
 }

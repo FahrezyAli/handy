@@ -49,3 +49,9 @@ class UpdateTaskName extends TimerEvent {
   @override
   List<Object?> get props => [taskName];
 }
+
+class AddOvertime extends TimerEvent {}
+
+class StartBreak extends TimerEvent {}
+
+class MarkPostureCheckShown extends TimerEvent {}
