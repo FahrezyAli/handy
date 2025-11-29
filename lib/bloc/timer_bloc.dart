@@ -12,8 +12,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
   final Box<WorkSession> _sessionsBox = Hive.box<WorkSession>('sessions');
 
   TimerBloc() : super(TimerState.initial()) {
-    _loadSettings();
-
+    // Register all event handlers first
     on<StartTimer>(_onStartTimer);
     on<PauseTimer>(_onPauseTimer);
     on<ResumeTimer>(_onResumeTimer);
@@ -24,6 +23,9 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     on<AddOvertime>(_onAddOvertime);
     on<StartBreak>(_onStartBreak);
     on<MarkPostureCheckShown>(_onMarkPostureCheckShown);
+    
+    // Load settings after handlers are registered
+    _loadSettings();
   }
 
   void _loadSettings() {
