@@ -21,6 +21,9 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     on<TimerTick>(_onTimerTick);
     on<UpdateSettings>(_onUpdateSettings);
     on<UpdateTaskName>(_onUpdateTaskName);
+    on<AddOvertime>(_onAddOvertime);
+    on<StartBreak>(_onStartBreak);
+    on<MarkPostureCheckShown>(_onMarkPostureCheckShown);
   }
 
   void _loadSettings() {
@@ -49,6 +52,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
         initialDuration: duration,
         status: TimerStatus.running,
         isWorkMode: event.isWorkMode,
+        postureCheckShown: false, // Reset posture check when starting new timer
       ),
     );
 
@@ -83,17 +87,9 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
       _timer?.cancel();
       _saveSession();
       
-      // Auto-start break timer when work finishes, or complete when break finishes
+      // When work timer finishes, just mark as completed and let UI handle the alert
       if (state.isWorkMode) {
-        // Work timer finished, automatically start break timer
-        final breakDuration = state.breakDuration;
-        emit(state.copyWith(
-          status: TimerStatus.running,
-          isWorkMode: false,
-          duration: breakDuration,
-          initialDuration: breakDuration,
-        ));
-        _startTicking();
+        emit(state.copyWith(status: TimerStatus.completed, duration: 0));
       } else {
         // Break timer finished, mark as completed
         emit(state.copyWith(status: TimerStatus.completed, duration: 0));
@@ -124,6 +120,37 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
 
   void _onUpdateTaskName(UpdateTaskName event, Emitter<TimerState> emit) {
     emit(state.copyWith(taskName: event.taskName));
+  }
+
+  void _onAddOvertime(AddOvertime event, Emitter<TimerState> emit) {
+    // Add 5 minutes (300 seconds) to work duration
+    final newDuration = 300;
+    emit(
+      state.copyWith(
+        duration: newDuration,
+        initialDuration: state.initialDuration + newDuration,
+        status: TimerStatus.running,
+        isWorkMode: true,
+      ),
+    );
+    _startTicking();
+  }
+
+  void _onStartBreak(StartBreak event, Emitter<TimerState> emit) {
+    _timer?.cancel();
+    final breakDuration = state.breakDuration;
+    emit(state.copyWith(
+      status: TimerStatus.running,
+      isWorkMode: false,
+      duration: breakDuration,
+      initialDuration: breakDuration,
+      postureCheckShown: false, // Reset for break timer
+    ));
+    _startTicking();
+  }
+
+  void _onMarkPostureCheckShown(MarkPostureCheckShown event, Emitter<TimerState> emit) {
+    emit(state.copyWith(postureCheckShown: true));
   }
 
   void _startTicking() {
