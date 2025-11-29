@@ -76,7 +76,7 @@ class HomeView extends StatelessWidget {
                             color: Color(0xFF2D2D44),
                           ),
                           onPressed: () {
-                            _showEditTaskDialog(context, state.taskName);
+                            _showEditTimerSheet(context, state.taskName);
                           },
                         ),
                       ),
@@ -130,12 +130,8 @@ class HomeView extends StatelessWidget {
                       ElevatedButton(
                         onPressed: () {
                           if (state.status == TimerStatus.initial) {
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              backgroundColor: Colors.transparent,
-                              builder: (context) => const SetTimerSheet(),
-                            );
+                            // Immediately start the timer with current settings
+                            context.read<TimerBloc>().add(const StartTimer(true));
                           } else if (state.status == TimerStatus.running) {
                             context.read<TimerBloc>().add(PauseTimer());
                           } else if (state.status == TimerStatus.paused) {
@@ -228,43 +224,85 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  void _showEditTaskDialog(BuildContext context, String currentTask) {
+  void _showEditTimerSheet(BuildContext context, String currentTask) {
     final controller = TextEditingController(text: currentTask);
-    showDialog(
+    
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF3D3D54),
-        title: const Text(
-          'Edit Task Name',
-          style: TextStyle(color: Colors.white),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
-        content: TextField(
-          controller: controller,
-          style: const TextStyle(color: Colors.white),
-          decoration: const InputDecoration(
-            hintText: 'Enter task name',
-            hintStyle: TextStyle(color: Colors.white54),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.white54),
-            ),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFFE8E0B8)),
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFFD4E7E5),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
             ),
           ),
+          child: SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Handle bar
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2D2D44).withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                // Task name input field
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: TextField(
+                    controller: controller,
+                    style: const TextStyle(
+                      color: Color(0xFF2D2D44),
+                      fontSize: 18,
+                    ),
+                    decoration: InputDecoration(
+                      labelText: 'Task Name',
+                      labelStyle: const TextStyle(
+                        color: Color(0xFF2D2D44),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color(0xFF2D2D44),
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                    onSubmitted: (value) {
+                      context.read<TimerBloc>().add(UpdateTaskName(value));
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+                // Set Timer Sheet
+                const SetTimerSheet(),
+              ],
+            ),
+          ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              context.read<TimerBloc>().add(UpdateTaskName(controller.text));
-              Navigator.pop(context);
-            },
-            child: const Text('Save'),
-          ),
-        ],
       ),
     );
   }

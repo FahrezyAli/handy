@@ -24,222 +24,198 @@ class _SetTimerSheetState extends State<SetTimerSheet> {
   Widget build(BuildContext context) {
     return BlocBuilder<TimerBloc, TimerState>(
       builder: (context, state) {
-        return Container(
-          decoration: const BoxDecoration(
-            color: Color(0xFFD4E7E5),
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(24),
-              topRight: Radius.circular(24),
-            ),
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Handle bar
-                  Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2D2D44).withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  const Text(
-                    'Set Timer',
-                    style: TextStyle(
-                      color: Color(0xFF2D2D44),
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFBBCBCA),
-                      borderRadius: BorderRadius.circular(32),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                isWorkMode = true;
-                              });
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              decoration: BoxDecoration(
-                                color: isWorkMode
-                                    ? const Color(0xFF2D2D44)
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(32),
-                              ),
-                              child: Text(
-                                'Work',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: isWorkMode
-                                      ? Colors.white
-                                      : const Color(0xFF2D2D44),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
+        return Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Set Timer',
+                style: TextStyle(
+                  color: Color(0xFF2D2D44),
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFBBCBCA),
+                  borderRadius: BorderRadius.circular(32),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isWorkMode = true;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          decoration: BoxDecoration(
+                            color: isWorkMode
+                                ? const Color(0xFF2D2D44)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(32),
                           ),
-                        ),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                isWorkMode = false;
-                              });
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              decoration: BoxDecoration(
-                                color: !isWorkMode
-                                    ? const Color(0xFF2D2D44)
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(32),
-                              ),
-                              child: Text(
-                                'Break',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: !isWorkMode
-                                      ? Colors.white
-                                      : const Color(0xFF2D2D44),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    height: 120,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _buildTimePicker(
-                          isWorkMode ? workHours : breakHours,
-                          'Hours',
-                          24,
-                          (value) {
-                            setState(() {
-                              if (isWorkMode) {
-                                workHours = value;
-                              } else {
-                                breakHours = value;
-                              }
-                            });
-                          },
-                        ),
-                        _buildTimePicker(
-                          isWorkMode ? workMinutes : breakMinutes,
-                          'Min',
-                          60,
-                          (value) {
-                            setState(() {
-                              if (isWorkMode) {
-                                workMinutes = value;
-                              } else {
-                                breakMinutes = value;
-                              }
-                            });
-                          },
-                        ),
-                        _buildTimePicker(
-                          isWorkMode ? workSeconds : breakSeconds,
-                          'Sec',
-                          60,
-                          (value) {
-                            setState(() {
-                              if (isWorkMode) {
-                                workSeconds = value;
-                              } else {
-                                breakSeconds = value;
-                              }
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.arrow_back,
-                            color: Color(0xFF2D2D44),
-                          ),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            final workDuration =
-                                workHours * 3600 +
-                                workMinutes * 60 +
-                                workSeconds;
-                            final breakDuration =
-                                breakHours * 3600 +
-                                breakMinutes * 60 +
-                                breakSeconds;
-
-                            context.read<TimerBloc>().add(
-                              UpdateSettings(
-                                workDuration: workDuration,
-                                breakDuration: breakDuration,
-                              ),
-                            );
-                            context.read<TimerBloc>().add(
-                              const StartTimer(true),
-                            );
-                            Navigator.pop(context);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF2D2D44),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 20),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                          child: const Text(
-                            'Done',
+                          child: Text(
+                            'Work',
+                            textAlign: TextAlign.center,
                             style: TextStyle(
+                              color: isWorkMode
+                                  ? Colors.white
+                                  : const Color(0xFF2D2D44),
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ),
-                    ],
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isWorkMode = false;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          decoration: BoxDecoration(
+                            color: !isWorkMode
+                                ? const Color(0xFF2D2D44)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(32),
+                          ),
+                          child: Text(
+                            'Break',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: !isWorkMode
+                                  ? Colors.white
+                                  : const Color(0xFF2D2D44),
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                height: 120,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildTimePicker(
+                      isWorkMode ? workHours : breakHours,
+                      'Hours',
+                      24,
+                      (value) {
+                        setState(() {
+                          if (isWorkMode) {
+                            workHours = value;
+                          } else {
+                            breakHours = value;
+                          }
+                        });
+                      },
+                    ),
+                    _buildTimePicker(
+                      isWorkMode ? workMinutes : breakMinutes,
+                      'Min',
+                      60,
+                      (value) {
+                        setState(() {
+                          if (isWorkMode) {
+                            workMinutes = value;
+                          } else {
+                            breakMinutes = value;
+                          }
+                        });
+                      },
+                    ),
+                    _buildTimePicker(
+                      isWorkMode ? workSeconds : breakSeconds,
+                      'Sec',
+                      60,
+                      (value) {
+                        setState(() {
+                          if (isWorkMode) {
+                            workSeconds = value;
+                          } else {
+                            breakSeconds = value;
+                          }
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: Color(0xFF2D2D44),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        final workDuration =
+                            workHours * 3600 +
+                            workMinutes * 60 +
+                            workSeconds;
+                        final breakDuration =
+                            breakHours * 3600 +
+                            breakMinutes * 60 +
+                            breakSeconds;
+
+                        context.read<TimerBloc>().add(
+                          UpdateSettings(
+                            workDuration: workDuration,
+                            breakDuration: breakDuration,
+                          ),
+                        );
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF2D2D44),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: const Text(
+                        'Done',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
-            ),
+            ],
           ),
         );
       },

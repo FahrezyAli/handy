@@ -81,8 +81,23 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
       emit(state.copyWith(duration: event.duration));
     } else {
       _timer?.cancel();
-      emit(state.copyWith(status: TimerStatus.completed, duration: 0));
       _saveSession();
+      
+      // Auto-start break timer when work finishes, or complete when break finishes
+      if (state.isWorkMode) {
+        // Work timer finished, automatically start break timer
+        final breakDuration = state.breakDuration;
+        emit(state.copyWith(
+          status: TimerStatus.running,
+          isWorkMode: false,
+          duration: breakDuration,
+          initialDuration: breakDuration,
+        ));
+        _startTicking();
+      } else {
+        // Break timer finished, mark as completed
+        emit(state.copyWith(status: TimerStatus.completed, duration: 0));
+      }
     }
   }
 
